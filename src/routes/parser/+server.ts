@@ -3,7 +3,7 @@ import type { RequestHandler } from "@sveltejs/kit";
 const parserHtml = "https://www.fflogs.com/desktop-client/parser";
 const parserRegex =
   /(https:\/\/assets.rpglogs.com\/js\/log-parsers\/parser-ff\.[a-f0-9]+\.js)/;
-const ua = "malefic/1.0.0";
+const ua = "malefic/0.0.1 (+https://github.com/NotNite/malefic)";
 
 let parser: string | null = null;
 
@@ -20,7 +20,11 @@ async function get() {
   if (!parserUrl) throw new Error("Failed to find parser URL");
   console.log("Got parser URL", parserUrl);
 
-  const parserResp = await fetch(parserUrl);
+  const parserResp = await fetch(parserUrl, {
+    headers: {
+      "User-Agent": ua
+    }
+  });
   if (!parserResp.ok) throw new Error("Failed to fetch FFLogs parser script");
 
   parser = await parserResp.text();
