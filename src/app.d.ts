@@ -17,7 +17,7 @@ declare global {
   }
 
   interface Window {
-    // FFLogs
+    // FF Logs
     LogParser: new (
       unk: number,
       unk2: boolean,

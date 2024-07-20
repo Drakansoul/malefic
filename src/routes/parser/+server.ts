@@ -14,7 +14,7 @@ async function get() {
       "User-Agent": ua
     }
   });
-  if (!resp.ok) throw new Error("Failed to fetch FFLogs parser site");
+  if (!resp.ok) throw new Error("Failed to fetch FF Logs parser site");
 
   const parserUrl = parserRegex.exec(await resp.text())?.[1];
   if (!parserUrl) throw new Error("Failed to find parser URL");
@@ -25,7 +25,7 @@ async function get() {
       "User-Agent": ua
     }
   });
-  if (!parserResp.ok) throw new Error("Failed to fetch FFLogs parser script");
+  if (!parserResp.ok) throw new Error("Failed to fetch FF Logs parser script");
 
   parser = await parserResp.text();
 }
