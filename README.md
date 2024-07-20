@@ -12,7 +12,7 @@ Use this URL in [OverlayPlugin](https://github.com/OverlayPlugin/OverlayPlugin)/
 https://malefic.n2.pm/?OVERLAY_WS=ws://127.0.0.1:10501/ws
 ```
 
-To set the default view, add `&damageType=rDPS` to the end of the URL.
+To set the default view, add `&damageType=rDPS` to the end of the URL. To see sample data, add `&test`.
 
 ## Why?
 
