@@ -1,6 +1,6 @@
 # malefic
 
-![A screenshot of malefic in Browsingway](https://fxdiscord.com/i/rm144z5j.png)
+![A screenshot of malefic in Browsingway](https://fxdiscord.com/i/qqo79mmo.png)
 
 An overlay that implements FF Logs meters. This is **not** intended to replace your original overlay, more adding to it for precise viewing of rDPS and such. I personally use it with [kagerou](https://github.com/hibiyasleep/kagerou).
 
@@ -31,3 +31,8 @@ This means that, while the UI is entirely custom in SvelteKit, the parsing backe
 As most projects I make, I don't actually care about parsing. I originally had no intentions to publish this work, but my friends wanted to use this when I showed it to them, so I polished it into the minimum viable product.
 
 It is unknown if I will maintain this, and things may break at any moment. Damage numbers may be wrong in some scenarios. You have been warned.
+
+## Credits
+
+- [FF Logs Uploader](https://www.fflogs.com/client/download) for the parser script
+- [xivapi/classjob-icons](https://github.com/xivapi/classjob-icons) for... the class/job icons

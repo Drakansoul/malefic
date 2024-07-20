@@ -10,6 +10,8 @@
   } from "../lib/parser";
   import { OverlayEvent } from "$lib/types/OverlayPlugin";
   import { State, type LogParser } from "$lib/types/LogParser";
+  import { getColor, getJob } from "$lib/job";
+  import getIcon from "$lib/icons";
 
   let query = new URLSearchParams(window.location.search);
 
@@ -50,24 +52,26 @@
   </div>
 
   <div class="dps">
-    {#each Object.entries(parse?.damage ?? {}).sort((a, b) => b[1][damageType] - a[1][damageType]) as [name, value]}
+    {#each Object.entries(parse?.actors ?? {}).sort((a, b) => b[1].damage[damageType] - a[1].damage[damageType]) as [name, value]}
       <div
         class="row"
-        style="--progress: {(value[damageType] /
-          (parse?.max[damageType] ?? value[damageType])) *
-          100}%"
+        style="--progress: {(value.damage[damageType] /
+          (parse?.max[damageType] ?? value.damage[damageType])) *
+          100}%; --color: {getColor(value.job)};"
       >
-        <span>{name}</span>
+        <div class="player">
+          {@html getIcon(getJob(value.job))}
+          <span>{name}</span>
+        </div>
         <div class="damage">
           <span
-            >{(value[damageType] / (parse?.duration ?? 1)).toLocaleString(
-              "en-US",
-              { maximumFractionDigits: 2 }
-            )}</span
+            >{(
+              value.damage[damageType] / (parse?.duration ?? 1)
+            ).toLocaleString("en-US", { maximumFractionDigits: 2 })}</span
           >
 
           <span
-            >({value[damageType].toLocaleString("en-US", {
+            >({value.damage[damageType].toLocaleString("en-US", {
               maximumFractionDigits: 2
             })})</span
           >
@@ -126,10 +130,10 @@
     align-items: center;
     justify-content: space-between;
 
-    border-bottom: 3px solid var(--pico-primary);
+    border-bottom: 3px solid var(--color);
     border-image: linear-gradient(
         90deg,
-        var(--pico-primary) var(--progress),
+        var(--color) var(--progress),
         rgba(0, 0, 0, 0) 0%,
         rgba(0, 0, 0, 0) 100%
       )
@@ -139,5 +143,16 @@
   .dps {
     overflow-y: auto;
     background-color: #13171fbe !important;
+  }
+
+  .player {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  :global(svg) {
+    width: 1.75rem;
+    height: 1.75rem;
   }
 </style>

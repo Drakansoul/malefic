@@ -1,3 +1,4 @@
+import { getJob } from "./job";
 import type { LogParser, Meter } from "./types/LogParser";
 
 export default function createParser() {
@@ -29,7 +30,7 @@ export function parseMeters(
     .reverse()[0];
   if (!meter) throw new Error("No meters found");
 
-  const damage: Record<string, Damage> = {};
+  const actors: Record<string, ParseActor> = {};
   const max = {
     dps: 0,
     rDPS: 0,
@@ -45,6 +46,7 @@ export function parseMeters(
     cDPS: 0
   };
   for (const actor of Object.values(meter.friendlyDamage.actors)) {
+    const job = getJob(actor.fullType);
     // taken from getMetersConfig
     const actorDamage = {
       dps: actor.amount,
@@ -56,7 +58,8 @@ export function parseMeters(
         (actor.singleTargetAmountTaken ?? 0) +
         (actor.amountGiven ?? 0)
     };
-    damage[actor.name] = actorDamage;
+
+    actors[actor.name] = { job, damage: actorDamage };
 
     if (actorDamage.dps > max.dps) max.dps = actorDamage.dps;
     if (actorDamage.rDPS > max.rDPS) max.rDPS = actorDamage.rDPS;
@@ -73,7 +76,7 @@ export function parseMeters(
 
   return {
     meter,
-    damage,
+    actors,
     max,
     sum,
     duration: (meter.endTime - meter.startTime) / 1000
@@ -82,10 +85,15 @@ export function parseMeters(
 
 export type Parse = {
   meter: Meter;
-  damage: Record<string, Damage>;
+  actors: Record<string, ParseActor>;
   max: Record<DamageType, number>;
   sum: Record<DamageType, number>;
   duration: number;
+};
+
+export type ParseActor = {
+  job: string;
+  damage: Damage;
 };
 
 export type Damage = {
@@ -105,7 +113,7 @@ export enum DamageType {
 }
 
 export function testMode(): Parse {
-  const testDamage: Record<string, Damage> = {};
+  const testActors: Record<string, ParseActor> = {};
   const words = [
     "One",
     "Two",
@@ -116,23 +124,27 @@ export function testMode(): Parse {
     "Seven",
     "Eight"
   ];
+  const jobs = ["PCT", "VPR", "RPR", "RDM", "WAR", "GNB", "AST", "SGE"];
 
   let sum = 0;
   for (let i = 0; i < 8; i++) {
     const name = `Malefic ${words[i]}`;
-    testDamage[name] = {
+    const job = jobs[i];
+    const damage = {
       dps: 0,
       rDPS: 1000 - (1000 / 8) * i,
       nDPS: 0,
       aDPS: 0,
       cDPS: 0
     };
-    sum += testDamage[name].rDPS;
+
+    testActors[name] = { job, damage };
+    sum += damage.rDPS;
   }
 
   return {
     meter: null!,
-    damage: testDamage,
+    actors: testActors,
     max: {
       dps: 0,
       rDPS: 1000,
