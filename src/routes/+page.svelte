@@ -10,15 +10,15 @@
   } from "../lib/parser";
   import { OverlayEvent } from "$lib/types/OverlayPlugin";
   import { State, type LogParser } from "$lib/types/LogParser";
-  import { getColor, getJob } from "$lib/job";
-  import getIcon from "$lib/icons";
+  import ParseUI from "$lib/components/ParseUI.svelte";
+  import Header from "$lib/components/Header.svelte";
+
+  import { collapsed, damageType } from "$lib/state";
 
   let query = new URLSearchParams(window.location.search);
-
   let parser: LogParser | null = createParser();
   let parse: Parse | null = query.has("test") ? testMode() : null;
   let primaryPlayer: string | null = null;
-  $: damageType = (query.get("damageType") as DamageType) ?? DamageType.DPS;
 
   window.addOverlayListener(OverlayEvent.LogLine, (data) => {
     if (!parser) return;
@@ -41,44 +41,15 @@
 </script>
 
 <div class="container">
-  <div class="header">
-    <select bind:value={damageType}>
-      <option value={DamageType.DPS}>DPS</option>
-      <option value={DamageType.rDPS}>rDPS</option>
-      <option value={DamageType.nDPS}>nDPS</option>
-      <option value={DamageType.aDPS}>aDPS</option>
-      <option value={DamageType.cDPS}>cDPS</option>
-    </select>
-  </div>
+  <Header />
 
-  <div class="dps">
-    {#each Object.entries(parse?.actors ?? {}).sort((a, b) => b[1].damage[damageType] - a[1].damage[damageType]) as [name, value]}
-      <div
-        class="row"
-        style="--progress: {(value.damage[damageType] /
-          (parse?.max[damageType] ?? value.damage[damageType])) *
-          100}%; --color: {getColor(value.job)};"
-      >
-        <div class="player">
-          {@html getIcon(getJob(value.job))}
-          <span>{name}</span>
-        </div>
-        <div class="damage">
-          <span
-            >{(
-              value.damage[damageType] / (parse?.duration ?? 1)
-            ).toLocaleString("en-US", { maximumFractionDigits: 2 })}</span
-          >
-
-          <span
-            >({value.damage[damageType].toLocaleString("en-US", {
-              maximumFractionDigits: 2
-            })})</span
-          >
-        </div>
-      </div>
-    {/each}
-  </div>
+  {#if !$collapsed}
+    <div class="inner">
+      {#if parse != null}
+        <ParseUI {parse} />
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -89,7 +60,11 @@
     height: 100%;
     width: 100%;
     overflow: hidden;
+
     background-color: transparent;
+    color: white;
+
+    font-family: "Inter", sans-serif;
   }
 
   :root {
@@ -101,58 +76,16 @@
   .container {
     display: flex;
     flex-direction: column;
-
     width: 100vw;
     height: 100vh;
     max-width: 100vw;
     max-height: 100vh;
     padding: 0;
     margin: 0;
-
-    color: white;
-    font-family: "Inter", sans-serif;
     font-size: 1rem;
   }
 
-  select {
-    margin-bottom: 0;
-  }
-
-  .header {
-    width: 100%;
-  }
-
-  .row {
-    display: flex;
-    height: 2rem;
-    padding: 0.5rem;
-
-    align-items: center;
-    justify-content: space-between;
-
-    border-bottom: 3px solid var(--color);
-    border-image: linear-gradient(
-        90deg,
-        var(--color) var(--progress),
-        rgba(0, 0, 0, 0) 0%,
-        rgba(0, 0, 0, 0) 100%
-      )
-      1;
-  }
-
-  .dps {
-    overflow-y: auto;
-    background-color: #13171fbe !important;
-  }
-
-  .player {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  :global(svg) {
-    width: 1.75rem;
-    height: 1.75rem;
+  .inner {
+    height: min-content;
   }
 </style>

@@ -1,3 +1,5 @@
+import "unplugin-icons/types/svelte";
+
 import type { LogParser } from "$lib/types/LogParser";
 import type {
   OverlayEvent,
