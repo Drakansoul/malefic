@@ -1,6 +1,6 @@
 # malefic
 
-![A screenshot of malefic in Browsingway](https://fxdiscord.com/i/qqo79mmo.png)
+![A screenshot of malefic in Browsingway](https://fxdiscord.com/i/ahnpq4n6.png)
 
 An overlay that implements FF Logs meters. This is **not** intended to replace your original overlay, more adding to it for precise viewing of rDPS and such. I personally use it with [kagerou](https://github.com/hibiyasleep/kagerou).
 
